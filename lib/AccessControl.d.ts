@@ -560,7 +560,7 @@ declare class AccessControl {
      */
     static filter(data: any, attributes: string[]): any;
     /**
-     *  Checks whether the given object is an instance of `AccessControl.Error`.
+     *  Checks whether the given object is an instance of `AccessControlError`.
      *  @name AccessControl.isACError
      *  @alias AccessControl.isAccessControlError
      *  @function
