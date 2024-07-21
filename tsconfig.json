@@ -2,8 +2,9 @@
   "extends": "@cutepilot/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "declarationDir": "lib",
-    "outDir": "lib",
+    "declaration": true,
+    "declarationDir": "./lib",
+    "outDir": "./lib",
     "types": [
       "node",
       "jest"

@@ -38,7 +38,7 @@
   "scripts": {
     "deps": "ncu -i",
     "clean": "rimraf ./lib",
-    "build": "npm run clean && mkdirp ./lib && tsc",
+    "build": "npm run clean && mkdirp ./lib && tsc --project tsconfig.build.json",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "cover": "npm run _jest -- --coverage",
     "report": "open ./test/coverage/lcov-report/index.html"
