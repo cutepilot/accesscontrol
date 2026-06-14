@@ -1,2 +1,2 @@
-export * from './AccessControl';
-export * from './core';
+export * from './AccessControl.js';
+export * from './core/index.js';

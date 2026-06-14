@@ -1,21 +1,22 @@
 {
-    "extends": "@esarj/tsconfig",
-    "compilerOptions": {
-        "baseUrl": ".",
-        "declarationDir": "lib",
-        "outDir": "lib",
-        "types": [
-            "node",
-            "jest"
-        ],
-        "typeRoots": [
-            "node_modules/@types",
-            "node_modules"
-        ]
-    },
-    "include": [
-        // tsconfig.build.json only includes src/ dir.
-        "src/**/*.ts",
-        "test/**/*.ts"
+  "extends": "@cutepilot/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationDir": "./lib",
+    "outDir": "./lib",
+    "types": [
+      "node",
+      "jest"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules"
     ]
+  },
+  "include": [
+    // tsconfig.build.json only includes src/ dir.
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
 }

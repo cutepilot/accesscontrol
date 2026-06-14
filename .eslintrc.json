@@ -1,5 +1,5 @@
 {
     "extends": [
-        "@esarj/eslint-config/ts"
+        "@cutepilot/eslint-config/ts"
     ]
 }
