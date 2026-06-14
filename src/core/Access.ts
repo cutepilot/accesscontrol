@@ -1,6 +1,6 @@
-import { AccessControl, IGrants } from '../index.js';
-import { IAccessInfo, AccessControlError } from '../core/index.js';
+import { AccessControlError, type IAccessInfo } from '../core/index.js';
 import { Action, Possession } from '../enums/index.js';
+import type { AccessControl, IGrants } from '../index.js';
 import { utils } from '../utils.js';
 
 /**
@@ -12,7 +12,6 @@ import { utils } from '../utils.js';
  * @memberof AccessControl
  */
 export class Access {
-
   /** Inner `IAccessInfo` object. */
   protected _: IAccessInfo = {};
 
@@ -34,7 +33,11 @@ export class Access {
    * possession is omitted, it will default to `"any"`.
    * @param denied - Specifies whether this `Access` is denied.
    */
-  constructor(ac: AccessControl, roleOrInfo?: string | string[] | IAccessInfo, denied: boolean = false) {
+  constructor(
+    ac: AccessControl,
+    roleOrInfo?: string | string[] | IAccessInfo,
+    denied: boolean = false
+  ) {
     this._ac = ac;
     this._grants = (ac as any)._grants;
     this._.denied = denied;
@@ -53,7 +56,9 @@ export class Access {
     } else if (roleOrInfo !== undefined) {
       // undefined is allowed (`roleOrInfo` can be omitted) but throw if
       // some other type is passed.
-      throw new AccessControlError('Invalid role(s), expected a valid string, string[] or IAccessInfo.');
+      throw new AccessControlError(
+        'Invalid role(s), expected a valid string, string[] or IAccessInfo.'
+      );
     }
   }
 
@@ -148,7 +153,7 @@ export class Access {
    *   .grant('admin').updateAny('video');
    */
   grant(roleOrInfo?: string | string[] | IAccessInfo): Access {
-    return (new Access(this._ac, roleOrInfo, false)).attributes(['*']);
+    return new Access(this._ac, roleOrInfo, false).attributes(['*']);
   }
 
   /**
@@ -161,7 +166,7 @@ export class Access {
    *   .deny('user').deleteAny('video');
    */
   deny(roleOrInfo?: string | string[] | IAccessInfo): Access {
-    return (new Access(this._ac, roleOrInfo, true)).attributes([]);
+    return new Access(this._ac, roleOrInfo, true).attributes([]);
   }
 
   /**
@@ -408,7 +413,12 @@ export class Access {
    * @param attributes
    * @returns - Self instance of `Access`.
    */
-  private _prepareAndCommit(action: Action, possession: Possession, resource?: string | string[], attributes?: string | string[]): Access {
+  private _prepareAndCommit(
+    action: Action,
+    possession: Possession,
+    resource?: string | string[],
+    attributes?: string | string[]
+  ): Access {
     this._.action = action;
     this._.possession = possession;
     if (resource) this._.resource = resource;
@@ -427,5 +437,4 @@ export class Access {
 
     return this;
   }
-
 }

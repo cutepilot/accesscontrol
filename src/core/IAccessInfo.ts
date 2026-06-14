@@ -1,4 +1,4 @@
-import { Action, Possession } from '../enums/index.js';
+import type { Action, Possession } from '../enums/index.js';
 
 /**
  * An interface that defines an access information to be granted or denied.

@@ -1,5 +1,5 @@
 // own modules
-import { UnknownObject, IGrants, IQueryInfo } from '../core/index.js';
+import type { IGrants, IQueryInfo, UnknownObject } from '../core/index.js';
 import { utils } from '../utils.js';
 
 /**
@@ -34,7 +34,6 @@ import { utils } from '../utils.js';
  * @memberof AccessControl
  */
 export class Permission {
-
   /**
    * @private
    */
@@ -55,7 +54,7 @@ export class Permission {
     this._ = {
       attributes: utils.getUnionAttrsOfRoles(grants, query),
       roles: utils.toStringArray(query.role),
-      resource: query.resource ?? '',
+      resource: query.resource ?? ''
     };
   }
 
@@ -115,5 +114,4 @@ export class Permission {
   filter(data: UnknownObject | UnknownObject[]): UnknownObject | UnknownObject[] {
     return utils.filterAll(data, this.attributes);
   }
-
 }

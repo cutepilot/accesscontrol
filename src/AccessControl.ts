@@ -1,17 +1,17 @@
 import {
   Access,
-  IAccessInfo,
-  Query,
-  IQueryInfo,
-  Permission,
   AccessControlError,
-  IGrantsList,
-  IGrants,
-  IGrantsItem,
-  IActionAttributes,
-  UnknownObject
+  type IAccessInfo,
+  type IActionAttributes,
+  type IGrants,
+  type IGrantsItem,
+  type IGrantsList,
+  type IQueryInfo,
+  Permission,
+  Query,
+  type UnknownObject
 } from './core/index.js';
-import { utils, ERR_LOCK } from './utils.js';
+import { ERR_LOCK, utils } from './utils.js';
 
 /**
  * AccessControl class that implements RBAC (Role-Based Access Control) basics
@@ -109,7 +109,6 @@ import { utils, ERR_LOCK } from './utils.js';
  * ac.lock();
  */
 export class AccessControl {
-
   /**
    * @private
    */
@@ -286,7 +285,7 @@ export class AccessControl {
   removeRoles(roles: string | string[]): AccessControl {
     if (this.isLocked) throw new AccessControlError(ERR_LOCK);
 
-    let rolesToRemove: string[] = utils.toStringArray(roles);
+    const rolesToRemove: string[] = utils.toStringArray(roles);
     if (rolesToRemove.length === 0 || !utils.isFilledStringArray(rolesToRemove)) {
       throw new AccessControlError(`Invalid role(s): ${JSON.stringify(roles)}`);
     }
@@ -341,7 +340,7 @@ export class AccessControl {
    * @param role - Target role name.
    */
   getInheritedRolesOf(role: string): string[] {
-    let roles: string[] = utils.getRoleHierarchyOf(this._grants, role);
+    const roles: string[] = utils.getRoleHierarchyOf(this._grants, role);
     roles.shift();
     return roles;
   }
@@ -369,9 +368,9 @@ export class AccessControl {
    */
   hasRole(role: string | string[]): boolean {
     if (Array.isArray(role)) {
-      return role.every((item: string) => this._grants.hasOwnProperty(item));
+      return role.every((item: string) => Object.hasOwn(this._grants, item));
     }
-    return this._grants.hasOwnProperty(role);
+    return Object.hasOwn(this._grants, role);
   }
 
   /**
@@ -380,7 +379,7 @@ export class AccessControl {
    * strings to check multiple resources at once.
    */
   hasResource(resource: string | string[]): boolean {
-    let resources = this.getResources();
+    const resources = this.getResources();
     if (Array.isArray(resource)) {
       return resource.every((item: string) => resources.indexOf(item) >= 0);
     }
@@ -600,7 +599,11 @@ export class AccessControl {
   /**
    * @private
    */
-  _removePermission(resources: string | string[], roles?: string | string[], actionPossession?: string) {
+  _removePermission(
+    resources: string | string[],
+    roles?: string | string[],
+    actionPossession?: string
+  ) {
     resources = utils.toStringArray(resources);
     // resources is set but returns empty array.
     if (resources.length === 0 || !utils.isFilledStringArray(resources)) {
@@ -614,23 +617,31 @@ export class AccessControl {
         throw new AccessControlError(`Invalid role(s): ${JSON.stringify(roles)}`);
       }
     }
-    utils.eachRoleResource(this._grants, (role: string, resource: string, resourceInfo: IActionAttributes) => {
-      if (resources.indexOf(resource) >= 0
-        // roles is optional. so remove if role is not defined.
-        // if defined, check if the current role is in the list.
-        && (!roles || roles.indexOf(role) >= 0)) {
-        if (actionPossession) {
-          // e.g. 'create' » 'create:any'
-          // to parse and normalize actionPossession string:
-          const ap: string = utils.normalizeActionPossession({ action: actionPossession }, true) as string;
-          // above will also validate the given actionPossession
-          delete this._grants[role][resource][ap];
-        } else {
-          // this is used for AccessControl#removeResources().
-          delete this._grants[role][resource];
+    utils.eachRoleResource(
+      this._grants,
+      (role: string, resource: string, resourceInfo: IActionAttributes) => {
+        if (
+          resources.indexOf(resource) >= 0 &&
+          // roles is optional. so remove if role is not defined.
+          // if defined, check if the current role is in the list.
+          (!roles || roles.indexOf(role) >= 0)
+        ) {
+          if (actionPossession) {
+            // e.g. 'create' » 'create:any'
+            // to parse and normalize actionPossession string:
+            const ap: string = utils.normalizeActionPossession(
+              { action: actionPossession },
+              true
+            ) as string;
+            // above will also validate the given actionPossession
+            delete this._grants[role][resource][ap];
+          } else {
+            // this is used for AccessControl#removeResources().
+            delete this._grants[role][resource];
+          }
         }
       }
-    });
+    );
   }
 
   // -------------------------------
@@ -670,7 +681,10 @@ export class AccessControl {
    * filtered = AccessControl.filter(assets); // or AccessControl.filter(assets, "");
    * console.log(assets); // {}
    */
-  static filter(data: UnknownObject | UnknownObject[], attributes: string[]): UnknownObject | UnknownObject[] {
+  static filter(
+    data: UnknownObject | UnknownObject[],
+    attributes: string[]
+  ): UnknownObject | UnknownObject[] {
     return utils.filterAll(data, attributes);
   }
 

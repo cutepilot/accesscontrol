@@ -17,4 +17,4 @@ export enum Possession {
    *  resource(s); including <i>own</i> resource(s) of the current subject.
    */
   ANY = 'any'
-};
+}

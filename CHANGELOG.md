@@ -3,13 +3,25 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
 
-## [UNRELEASED v3.0.0] (2024-07-01)
+## 3.0.0 (2026-06-14)
 
 ### Changed
-- **Breaking**: ESM now. All necessary code refactored.
-- **Breaking**: Removed static getters (such as `Action`, `Possession`, `Error`) from `AccessControl` class. Use respective imports instead.
-- **Breaking**: Removed default export for `AccessControl`. Use named import.
-- Updated dev dependencies.
+- **Breaking**: ESM only. All necessary code refactored.
+- **Breaking**: Requires Node v20 and above.
+- **Breaking**: Removed static getters (such as `Action`, `Possession`, `Error`) from `AccessControl` class. Use respective named imports instead.
+- **Breaking**: Removed default export for `AccessControl`. Use a named import: `import { AccessControl } from 'accesscontrol'`.
+- **Breaking**: Now ships an `exports` map; only the package root (`accesscontrol`) and `package.json` are importable.
+- Re-written in TypeScript; ships first-class type definitions.
+- Now built on `notation` v3 (`NotationGlob.union`, `Notation#filter`).
+- Modernized the toolchain: **TypeScript 6**, ESM-only build via `tsc` (no bundler).
+- Switched testing + coverage to **Vitest** (from Jest/ts-jest); coverage uses the istanbul provider.
+- Switched linting + formatting to **Biome** (from ESLint/TSLint).
+- Switched CI to **GitHub Actions** (from Travis).
+- Shared config via `tsconfig-oy` and `biome-config-oy`.
+
+### Fixed
+- `utils.getUnionAttrsOfRoles()` no longer throws when a (flattened/extended) role does not define the queried resource.
+- `utils.getCrossExtendingRole()` now returns `null` (instead of `false`) when no cross-inheritance is found.
 
 
 ## v2.3.0 (2021-05-10)

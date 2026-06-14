@@ -28,4 +28,4 @@ export enum Action {
    *  For example, an HTTP DELETE request or a database DELETE operation.
    */
   DELETE = 'delete'
-};
+}

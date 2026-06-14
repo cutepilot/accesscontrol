@@ -5,14 +5,13 @@
  *  methods (directly related with AccessControl) are tested via `ac.test.ts`.
  */
 
+import type { IQueryInfo } from '../src/core/index.js';
 import { AccessControl } from '../src/index.js';
-import { IQueryInfo } from '../src/core/index.js';
-import { utils, RESERVED_KEYWORDS } from '../src/utils.js';
+import { RESERVED_KEYWORDS, utils } from '../src/utils.js';
 // test helper
 import { helper } from './helper.js';
 
 describe('Test Suite: utils (generic)', () => {
-
   test('#type()', () => {
     expect(utils.type(undefined)).toEqual('undefined');
     expect(utils.type(null)).toEqual('null');
@@ -90,9 +89,9 @@ describe('Test Suite: utils (generic)', () => {
       }
     };
     expect(utils.deepFreeze(o)).toEqual(expect.any(Object));
-    expect(() => o.x = 5).toThrow();
-    expect(() => (o as any).inner = {}).toThrow();
-    expect(() => o.inner.x = 6).toThrow();
+    expect(() => (o.x = 5)).toThrow();
+    expect(() => ((o as any).inner = {})).toThrow();
+    expect(() => (o.inner.x = 6)).toThrow();
   });
 
   test('#each(), #eachKey()', () => {
@@ -124,19 +123,25 @@ describe('Test Suite: utils (generic)', () => {
       this.ok = true;
     }
 
-    utils.each([1], function (this, item: number) {
-      expect(this.ok).toBe(true);
-    }, new Context());
+    utils.each(
+      [1],
+      function (this, item: number) {
+        expect(this.ok).toBe(true);
+      },
+      new Context()
+    );
 
-    utils.eachKey({ key: 1 }, function (this, key: string) {
-      expect(this.ok).toBe(true);
-    }, new Context());
+    utils.eachKey(
+      { key: 1 },
+      function (this, key: string) {
+        expect(this.ok).toBe(true);
+      },
+      new Context()
+    );
   });
-
 });
 
 describe('Test Suite: utils (core)', () => {
-
   // ------------------------------------------
   // NOTE: other parts of these methods should be covered in other tests.
   // check coverage report.
@@ -171,11 +176,11 @@ describe('Test Suite: utils (core)', () => {
   test('#validResourceObject()', () => {
     helper.expectACError(() => utils.validResourceObject(null));
     helper.expectACError(() => utils.validResourceObject(null));
-    expect(utils.validResourceObject({ 'create': [] })).toBe(true);
+    expect(utils.validResourceObject({ create: [] })).toBe(true);
     expect(utils.validResourceObject({ 'create:any': ['*', '!id'] })).toBe(true);
     expect(utils.validResourceObject({ 'update:own': ['*'] })).toBe(true);
 
-    helper.expectACError(() => utils.validResourceObject({ 'invalid': [], 'create': [] }));
+    helper.expectACError(() => utils.validResourceObject({ invalid: [], create: [] }));
     helper.expectACError(() => utils.validResourceObject({ 'invalid:any': [] }));
     helper.expectACError(() => utils.validResourceObject({ 'invalid:any': [''] }));
     helper.expectACError(() => utils.validResourceObject({ 'read:own': ['*'], 'invalid:own': [] }));
@@ -183,43 +188,43 @@ describe('Test Suite: utils (core)', () => {
     helper.expectACError(() => utils.validResourceObject({ 'create:all': [] }));
     helper.expectACError(() => utils.validResourceObject({ 'create:all': [] }));
 
-    helper.expectACError(() => utils.validResourceObject({ 'create': null }));
+    helper.expectACError(() => utils.validResourceObject({ create: null }));
     helper.expectACError(() => utils.validResourceObject({ 'create:own': undefined }));
     helper.expectACError(() => utils.validResourceObject({ 'read:own': [], 'create:any': [''] }));
     helper.expectACError(() => utils.validResourceObject({ 'create:any': ['*', ''] }));
   });
 
   test('#validRoleObject()', () => {
-    let grants: any = { 'admin': { 'account': { 'read:any': ['*'] } } };
+    const grants: any = { admin: { account: { 'read:any': ['*'] } } };
     expect(utils.validRoleObject(grants, 'admin')).toBe(true);
-    grants.admin = { 'account': ['*'] };
+    grants.admin = { account: ['*'] };
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
-    grants.admin = { 'account': { 'read:own': ['*'] } };
+    grants.admin = { account: { 'read:own': ['*'] } };
     expect(() => utils.validRoleObject(grants, 'admin')).not.toThrow();
-    grants.admin = { 'account': { 'read': ['*'] } };
+    grants.admin = { account: { read: ['*'] } };
     expect(() => utils.validRoleObject(grants, 'admin')).not.toThrow();
-    grants.admin = { 'account': { 'read:all': ['*'] } };
+    grants.admin = { account: { 'read:all': ['*'] } };
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
-    grants.admin = { '$extend': ['*'] }; // cannot inherit non-existent role(s)
+    grants.admin = { $extend: ['*'] }; // cannot inherit non-existent role(s)
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
 
-    grants.user = { 'account': { 'read:own': ['*'] } };
-    grants.admin = { '$extend': ['user'] };
+    grants.user = { account: { 'read:own': ['*'] } };
+    grants.admin = { $extend: ['user'] };
     expect(() => utils.validRoleObject(grants, 'admin')).not.toThrow();
-    grants.admin = { '$': { 'account': { 'read:own': ['*'] } } }; // $: reserved
+    grants.admin = { $: { account: { 'read:own': ['*'] } } }; // $: reserved
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
-    grants.admin = { 'account': [] }; // invalid resource structure
+    grants.admin = { account: [] }; // invalid resource structure
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
-    grants.admin = { 'account': { 'read:own': [''] } }; // invalid resource structure
+    grants.admin = { account: { 'read:own': [''] } }; // invalid resource structure
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
-    grants.admin = { 'account': null }; // invalid resource structure
+    grants.admin = { account: null }; // invalid resource structure
     helper.expectACError(() => utils.validRoleObject(grants, 'admin'));
   });
 
   test('#normalizeQueryInfo(), #normalizeAccessInfo()', () => {
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.normalizeQueryInfo(null));
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.normalizeQueryInfo({ role: null }));
     helper.expectACError(() => (utils as any).normalizeQueryInfo({ role: 1 }));
     helper.expectACError(() => utils.normalizeQueryInfo({ role: [] }));
@@ -228,9 +233,9 @@ describe('Test Suite: utils (core)', () => {
     helper.expectACError(() => (utils as any).normalizeQueryInfo({ role: 'sa', resource: null }));
     helper.expectACError(() => (utils as any).normalizeQueryInfo({ role: 'sa', resource: [] }));
 
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.normalizeAccessInfo(null));
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.normalizeAccessInfo({ role: null }));
     helper.expectACError(() => utils.normalizeAccessInfo({ role: [] }));
     helper.expectACError(() => utils.normalizeAccessInfo({ role: '' }));
@@ -241,32 +246,32 @@ describe('Test Suite: utils (core)', () => {
   });
 
   test('#getRoleHierarchyOf()', () => {
-    let grants: any = {
-      'admin': {
-        '$extend': ['user']
+    const grants: any = {
+      admin: {
+        $extend: ['user']
         // 'account': { 'read:any': ['*'] }
       }
     };
     helper.expectACError(() => utils.getRoleHierarchyOf(grants, 'admin'));
-    grants.admin = { '$extend': ['admin'] };
+    grants.admin = { $extend: ['admin'] };
     helper.expectACError(() => utils.getRoleHierarchyOf(grants, 'admin'));
 
-    grants.admin = { 'account': { 'read:any': ['*'] } };
-    // @ts-ignore (testing invalid input)
+    grants.admin = { account: { 'read:any': ['*'] } };
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.getRoleHierarchyOf(grants, null));
     helper.expectACError(() => utils.getRoleHierarchyOf(grants, ''));
   });
 
   test('#getFlatRoles()', () => {
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.getFlatRoles({}, null));
     helper.expectACError(() => utils.getFlatRoles({}, ''));
   });
 
   test('#getNonExistentRoles()', () => {
-    let grants: any = {
-      'admin': {
-        'account': { 'read:any': ['*'] }
+    const grants: any = {
+      admin: {
+        account: { 'read:any': ['*'] }
       }
     };
     expect(utils.getNonExistentRoles(grants, [])).toEqual([]);
@@ -274,14 +279,14 @@ describe('Test Suite: utils (core)', () => {
   });
 
   test('#getCrossExtendingRole()', () => {
-    let grants: any = {
-      'user': {},
-      'admin': {
-        '$extend': ['user', 'editor']
+    const grants: any = {
+      user: {},
+      admin: {
+        $extend: ['user', 'editor']
       },
-      'editor': {
-        '$extend': ['admin']
-      },
+      editor: {
+        $extend: ['admin']
+      }
     };
     expect(utils.getCrossExtendingRole(grants, 'admin', ['admin'])).toEqual(null);
     expect(utils.getCrossExtendingRole(grants, 'admin', ['user'])).toEqual(null);
@@ -289,19 +294,19 @@ describe('Test Suite: utils (core)', () => {
   });
 
   test('#extendRole()', () => {
-    let grants: any = {
-      'user': {},
-      'admin': {
-        '$extend': ['user', 'editor']
+    const grants: any = {
+      user: {},
+      admin: {
+        $extend: ['user', 'editor']
       },
-      'editor': {
-        '$extend': ['admin']
+      editor: {
+        $extend: ['admin']
       },
-      'viewer': {}
+      viewer: {}
     };
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.extendRole(grants, null, ['admin']));
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     helper.expectACError(() => utils.extendRole(grants, 'admin', null));
     helper.expectACError(() => utils.extendRole(grants, 'nonexisting', 'user'));
     helper.expectACError(() => utils.extendRole(grants, 'admin', 'nonexisting'));
@@ -311,17 +316,17 @@ describe('Test Suite: utils (core)', () => {
   });
 
   test('#getUnionAttrsOfRoles()', () => {
-    let grants: any = {
-      'user': {
-        'account': {
+    const grants: any = {
+      user: {
+        account: {
           'read:own': ['*']
         }
       },
-      'admin': {
-        '$extend': ['user']
+      admin: {
+        $extend: ['user']
       }
     };
-    let query: IQueryInfo = {
+    const query: IQueryInfo = {
       role: 'admin',
       resource: 'account',
       action: 'read'
@@ -332,12 +337,11 @@ describe('Test Suite: utils (core)', () => {
   });
 
   test('#lockAC()', () => {
-    // @ts-ignore (testing invalid input)
+    // @ts-expect-error (testing invalid input)
     expect(() => utils.lockAC(null)).toThrow();
-    let ac = new AccessControl();
+    const ac = new AccessControl();
     helper.expectACError(() => utils.lockAC(ac));
     (ac as any)._grants = null;
     helper.expectACError(() => utils.lockAC(ac));
   });
-
 });

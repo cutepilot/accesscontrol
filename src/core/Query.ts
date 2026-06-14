@@ -1,4 +1,4 @@
-import { IQueryInfo, Permission, AccessControlError, IGrants } from '../core/index.js';
+import { AccessControlError, type IGrants, type IQueryInfo, Permission } from '../core/index.js';
 import { Action, Possession } from '../enums/index.js';
 import { utils } from '../utils.js';
 
@@ -12,7 +12,6 @@ import { utils } from '../utils.js';
  * @memberof AccessControl
  */
 export class Query {
-
   /**
    * Inner `IQueryInfo` object.
    */
@@ -42,14 +41,16 @@ export class Query {
     } else if (utils.type(roleOrInfo) === 'object') {
       // if this is a (permission) object, we directly build attributes
       // from grants.
-      if (Object.keys((roleOrInfo as IQueryInfo)).length === 0) {
+      if (Object.keys(roleOrInfo as IQueryInfo).length === 0) {
         throw new AccessControlError('Invalid IQueryInfo: {}');
       }
       this._ = roleOrInfo as IQueryInfo;
     } else if (roleOrInfo !== undefined) {
       // undefined is allowed (`role` can be omitted) but throw if some
       // other type is passed.
-      throw new AccessControlError('Invalid role(s), expected a valid string, string[] or IQueryInfo.');
+      throw new AccessControlError(
+        'Invalid role(s), expected a valid string, string[] or IQueryInfo.'
+      );
     }
   }
 

@@ -2,10 +2,8 @@
     <a href="https://github.com/onury/accesscontrol"><img width="465" height="170" src="https://raw.github.com/onury/accesscontrol/master/ac-logo.png" alt="AccessControl.js" /></a>
 </h1>
 <p align="center">
-    <a href="https://travis-ci.org/onury/accesscontrol"><img src="https://img.shields.io/travis/onury/accesscontrol.svg?branch=master&style=flat-square" alt="Build Status" /></a>
-    <a href="https://coveralls.io/github/onury/accesscontrol?branch=master"><img src="https://img.shields.io/coveralls/github/onury/accesscontrol/master.svg?style=flat-square" alt="Coverage Status" /></a>
-    <a href="https://david-dm.org/onury/accesscontrol"><img src="https://david-dm.org/onury/accesscontrol.svg?style=flat-square" alt="Dependencies" /></a>
-    <a href="https://github.com/onury/accesscontrol/graphs/commit-activity"><img src="https://img.shields.io/maintenance/yes/2019.svg?style=flat-square" alt="Maintained" /></a>
+    <a href="https://github.com/onury/accesscontrol/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/onury/accesscontrol/ci.yml?branch=master&style=flat-square" alt="Build Status" /></a>
+    <a href="https://github.com/onury/accesscontrol/graphs/commit-activity"><img src="https://img.shields.io/maintenance/yes/2026.svg?style=flat-square" alt="Maintained" /></a>
     <br />
     <a href="https://www.npmjs.com/package/accesscontrol"><img src="http://img.shields.io/npm/v/accesscontrol.svg?style=flat-square" alt="npm" /></a>
     <a href="https://github.com/onury/accesscontrol"><img src="https://img.shields.io/github/release/onury/accesscontrol.svg?style=flat-square" alt="Release" /></a>
@@ -66,9 +64,7 @@ with [**yarn**](https://yarn.pm/accesscontrol): `yarn add accesscontrol`
 ## Guide
 
 ```js
-const AccessControl = require('accesscontrol');
-// or:
-// import { AccessControl } from 'accesscontrol';
+import { AccessControl } from 'accesscontrol';
 ```
 
 ### Basic Example

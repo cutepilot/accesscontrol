@@ -1,5 +1,5 @@
-import { AccessControl } from '../src/index.js';
 import { AccessControlError } from '../src/core/index.js';
+import { AccessControl } from '../src/index.js';
 
 export const helper = {
   expectACError(fn: any, errMsg?: string) {
@@ -13,5 +13,4 @@ export const helper = {
       if (errMsg) expect((err as Error).message).toContain(errMsg);
     }
   }
-
 };

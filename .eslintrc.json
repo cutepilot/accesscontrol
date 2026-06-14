@@ -1,5 +1,0 @@
-{
-    "extends": [
-        "@cutepilot/eslint-config/ts"
-    ]
-}

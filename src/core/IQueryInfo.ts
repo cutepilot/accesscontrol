@@ -1,5 +1,5 @@
-import { Possession } from '../enums/Possession.js';
-import { Action } from '../enums/Action.js';
+import type { Action } from '../enums/Action.js';
+import type { Possession } from '../enums/Possession.js';
 
 /**
  * An interface that defines an access information to be queried.

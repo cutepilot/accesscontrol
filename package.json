@@ -1,6 +1,6 @@
 {
-  "name": "@cutepilot/accesscontrol",
-  "version": "2.2.1",
+  "name": "accesscontrol",
+  "version": "3.0.0",
   "description": "Role and Attribute based Access Control for Node.js",
   "author": "Onur Yildirim <onur@cutepilot.com>",
   "license": "MIT",
@@ -12,36 +12,34 @@
     "type": "git",
     "url": "git+https://github.com/onury/accesscontrol.git"
   },
-  "main": "./lib/index.js",
   "type": "module",
-  "directories": {
-    "lib": "./lib",
-    "test": "./test"
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "files": [
     "lib",
     "LICENSE"
   ],
-  "types": "./lib/index.d.ts",
   "engines": {
-    "node": ">=20",
-    "npm": "^10"
-  },
-  "cutepilot": {
-    "type": "module",
-    "dependencies": {},
-    "devDependencies": {
-      "eslint-config": "*",
-      "tsconfig": "*"
-    }
+    "node": ">=20"
   },
   "scripts": {
-    "deps": "ncu -i",
-    "clean": "rimraf ./lib",
-    "build": "npm run clean && mkdirp ./lib && tsc --project tsconfig.build.json",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "cover": "npm run _jest -- --coverage",
-    "report": "open ./test/coverage/lcov-report/index.html"
+    "lint": "biome check src test",
+    "format": "biome check --write src test",
+    "build": "tsc --project tsconfig.build.json",
+    "pretest": "npm run lint",
+    "test": "vitest run",
+    "cover": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "access",
@@ -73,22 +71,15 @@
     "scope",
     "context"
   ],
-  "devDependencies": {
-    "@cutepilot/eslint-config": "github:cutepilot/eslint-config",
-    "@cutepilot/tsconfig": "github:cutepilot/tsconfig",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^9.4.6",
-    "eslint": "8.57",
-    "jest": "^29.7.0",
-    "jest-cli": "^29.7.0",
-    "jest-config": "^29.7.0",
-    "mkdirp": "^0.5.1",
-    "ncp": "^2.0.0",
-    "rimraf": "^2.6.3",
-    "ts-jest": "^29.1.5",
-    "typescript": "^5.5.2"
-  },
   "dependencies": {
-    "notation": "^2.0.0"
+    "notation": "^3.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0",
+    "@types/node": "^25.9.3",
+    "@vitest/coverage-istanbul": "^4.1.8",
+    "tsconfig-oy": "^1.1.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }
